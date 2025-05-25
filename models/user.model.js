@@ -30,8 +30,29 @@ const userModel = new mongoose.Schema({
     },
     accountType: {
         type: String,
-        required: true,
+        enum: ['user', 'agent'],
+        default: 'active'
+    },
+    current_balance: {
+        type: Number,
+        default: 0
+    },
+    status: {
+        type: String,
+        enum: ['active', 'pending'],
+        default: 'active'
     },
 }, { timestamps: true })
-
+userModel.pre('save', function (next) {
+    if (this.isNew) {
+        if (this.accountType === 'agent') {
+            this.status = 'pending';
+            this.current_balance = 100000;
+        } else if (this.accountType === 'user') {
+            this.status = 'active';
+            this.current_balance = 40;
+        }
+    }
+    next();
+});
 export const User = mongoose.model("User", userModel)
