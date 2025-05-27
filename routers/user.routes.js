@@ -5,6 +5,22 @@ import { UserTransaction } from "../models/transaction.model.js"
 const router = Router();
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
+import authenticateUser from '../middlewares/verificationToken.js'
+import verifyAdmin from "../middlewares/verifyAdmin.js";
+
+
+
+
+
+
+// Get all user for admin
+router.get('/all-users',authenticateUser, verifyAdmin, async (req, res) => {
+    const result = await User.find().select({
+        __v: 0,
+        PIN: 0,
+    });
+    res.send(result);
+})
 // Create New Account/user
 router.post('/register', async (req, res) => {
     try {
@@ -62,6 +78,7 @@ router.post('/register', async (req, res) => {
         res.status(500).json({ message: `failed to signup:${error}` })
     }
 })
+// Login and get token
 router.post('/login', async (req, res) => {
     const { emailOrPhone, PIN } = req.body;
     if (!emailOrPhone || !PIN) {
@@ -90,7 +107,7 @@ router.post('/login', async (req, res) => {
                 name: user.name,
                 phone_number: user.phone_number,
                 email: user.email,
-                userType: user.userType,
+                accountType: user.userType,
                 NID: user.NID,
                 account_status: user.account_status,
                 current_balance: user.current_balance,
@@ -103,4 +120,22 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 })
+// get user data after login
+router.get('/user-data', authenticateUser, async (req, res) => {
+    try {
+        // Find the user by email (from the decoded JWT)
+        const user = await User.findOne({ email: req.user.email });
+        console.log(user);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        // Remove password from the user object
+        const { PIN, __v, ...userWithoutPin } = user;
+        console.log(user)
+        res.status(200).json({ user: userWithoutPin });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching user data" });
+    }
+});
 export default router;

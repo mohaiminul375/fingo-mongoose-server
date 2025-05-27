@@ -60,7 +60,6 @@ userModel.pre('save', function (next) {
         } else if (this.accountType === 'User') {
             this.status = 'Active';
             this.current_balance = 40;
-            this.total_income = undefined;
         }
     }
     next();
