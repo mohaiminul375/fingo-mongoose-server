@@ -29,9 +29,19 @@ const transactionModel = new mongoose.Schema(
         amount: {
             type: Number,
             required: true,
+        },
+        linked_Trx_ref: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'UserTransaction'
+        },
+        masterTrx_ref: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'MasterTransaction'
         }
-    }, {
-    timestamps: true
-}
+    },
+
+    {
+        timestamps: true
+    }
 )
-export const UserTransaction = mongoose.model("userTransaction", transactionModel)
+export const UserTransaction = mongoose.model("UserTransaction", transactionModel)

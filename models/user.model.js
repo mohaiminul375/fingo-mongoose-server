@@ -46,7 +46,7 @@ const userModel = new mongoose.Schema({
         type: Number,
         default: 0,
         required: function () {
-            return this.accountType === 'agent';
+            return this.accountType === 'Agent';
         }
     }
 }, { timestamps: true })
