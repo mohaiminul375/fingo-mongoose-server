@@ -3,7 +3,8 @@ import bcrypt from 'bcrypt'
 import { User } from "../models/user.model.js";
 import { UserTransaction } from "../models/transaction.model.js"
 const router = Router();
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid';
+import jwt from 'jsonwebtoken';
 // Create New Account/user
 router.post('/register', async (req, res) => {
     try {
@@ -61,5 +62,45 @@ router.post('/register', async (req, res) => {
         res.status(500).json({ message: `failed to signup:${error}` })
     }
 })
-
+router.post('/login', async (req, res) => {
+    const { emailOrPhone, PIN } = req.body;
+    if (!emailOrPhone || !PIN) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+    try {
+        // Find user by email or phone_number
+        const user = await User.findOne({
+            $or: [{ email: emailOrPhone }, { phone_number: emailOrPhone }]
+        });
+        if (!user) {
+            return res.status(400).json({ error: 'User not found' });
+        }
+        if (user?.status === 'Blocked') {
+            return res.status(403).json({ error: 'Your account is Blocked. Please contact support.' });
+        }
+        // Compare password with the stored hash
+        const isMatch = await bcrypt.compare(PIN, user.PIN);
+        if (!isMatch) {
+            return res.status(400).json({ error: 'Invalid credentials' });
+        }
+        // generate token
+        const token = jwt.sign(
+            {
+                id: user._id,
+                name: user.name,
+                phone_number: user.phone_number,
+                email: user.email,
+                userType: user.userType,
+                NID: user.NID,
+                account_status: user.account_status,
+                current_balance: user.current_balance,
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '12h' }
+        );
+        res.json({ success: true, token, message: 'Login successful' });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
 export default router;
