@@ -14,7 +14,7 @@ import verifyAdmin from "../middlewares/verifyAdmin.js";
 
 
 // Get all user for admin
-router.get('/all-users',authenticateUser, verifyAdmin, async (req, res) => {
+router.get('/all-users', authenticateUser, verifyAdmin, async (req, res) => {
     const result = await User.find().select({
         __v: 0,
         PIN: 0,
@@ -125,13 +125,13 @@ router.get('/user-data', authenticateUser, async (req, res) => {
     try {
         // Find the user by email (from the decoded JWT)
         const user = await User.findOne({ email: req.user.email });
-        console.log(user);
+        // console.log(user,'user got');
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
         // Remove password from the user object
-        const { PIN, __v, ...userWithoutPin } = user;
-        console.log(user)
+        const { PIN, ...userWithoutPin } = user.toObject();
+        console.log(userWithoutPin)
         res.status(200).json({ user: userWithoutPin });
     } catch (error) {
         console.error(error);
