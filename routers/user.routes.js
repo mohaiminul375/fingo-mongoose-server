@@ -15,7 +15,7 @@ import mongoose from "mongoose"
 
 
 // Get all user for admin
-router.get('/all-users', authenticateUser, verifyAdmin, async (req, res) => {
+router.get('/all-users', async (req, res) => {
     const result = await User.find().select({
         __v: 0,
         PIN: 0,
@@ -183,4 +183,22 @@ router.get('/user-data', authenticateUser, async (req, res) => {
         res.status(500).json({ message: "Error fetching user data" });
     }
 });
+
+// Block a User
+router.patch('/block-user/:id', async (req, res) => {
+    const userId = req.params.id;
+    try {
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
+        }
+        await User.updateOne(
+            { _id: userId },
+            { $set: { status: 'Blocked' } }
+        );
+        res.status(200).json({ success: true, message: 'user has been blocked' })
+    } catch (error) {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+
+})
 export default router;

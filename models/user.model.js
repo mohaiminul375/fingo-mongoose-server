@@ -39,12 +39,11 @@ const userModel = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Active', 'Pending'],
+        enum: ['Active', 'Pending' ],
         default: 'Active'
     },
     total_income: {
         type: Number,
-        default: 0,
         required: function () {
             return this.accountType === 'Agent';
         }
