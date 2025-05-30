@@ -30,6 +30,12 @@ const transactionModel = new mongoose.Schema(
             type: Number,
             required: true,
         },
+        admin_income: {
+            type: Number,
+        },
+        agent_income: {
+            type: Number,
+        },
         linked_Trx_ref: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'UserTransaction'

@@ -26,6 +26,12 @@ const transactionModel = new mongoose.Schema({
         type: String,
         required: true,
     },
+    admin_income: {
+        type: Number,
+    },
+    agent_income: {
+        type: Number,
+    },
     amount: {
         type: Number,
         required: true,

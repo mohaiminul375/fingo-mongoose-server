@@ -15,7 +15,7 @@ import mongoose from "mongoose"
 
 
 // Get all user for admin
-router.get('/all-users', async (req, res) => {
+router.get('/all-users', authenticateUser, verifyAdmin, async (req, res) => {
     const result = await User.find().select({
         __v: 0,
         PIN: 0,
@@ -67,31 +67,34 @@ router.post('/register', async (req, res) => {
         const trxObjectId1 = new mongoose.Types.ObjectId();
         const trxObjectId2 = new mongoose.Types.ObjectId();
         const masterTrxObjectId = new mongoose.Types.ObjectId();
-
+        const isAgent = savedUser.accountType === "Agent"
         const newTrx = [
             {
                 _id: trxObjectId1,
                 TrxID: trx_id_1,
                 method: 'New_user_bonus_send',
-                sender_name: 'Fingo-mfs',
-                sender_phone_number: 'Fingo-mfs@support',
+                sender_name: 'Fingo-admin',
+                sender_phone_number: 'Fingo-mfs@admin',
                 receiver_name: name,
                 receiver_phone_number: phone_number,
                 amount: bonusAmount,
                 linked_Trx_ref: trxObjectId2,
                 masterTrx_ref: masterTrxObjectId,
+                admin_income: 0,
+                agent_income: 0,
             },
             {
                 _id: trxObjectId2,
                 TrxID: trx_id_2,
                 method: 'New_user_bonus_receive',
-                sender_name: 'Fingo-mfs',
-                sender_phone_number: 'Fingo-mfs@support',
+                sender_name: 'Fingo-admin',
+                sender_phone_number: 'Fingo-mfs@admin',
                 receiver_name: name,
                 receiver_phone_number: phone_number,
                 amount: bonusAmount,
                 linked_Trx_ref: trxObjectId1,
                 masterTrx_ref: masterTrxObjectId,
+                ...(isAgent && { agent_income: 0 })
             }
         ];
 
@@ -106,6 +109,8 @@ router.post('/register', async (req, res) => {
             amount: bonusAmount,
             linked_Trx_ref_1: trxObjectId1,
             linked_Trx_ref_2: trxObjectId2,
+            admin_income: 0,
+            agent_income: 0,
         });
 
         await UserTransaction.insertMany(newTrx, { session });
@@ -185,7 +190,7 @@ router.get('/user-data', authenticateUser, async (req, res) => {
 });
 
 // Block a User
-router.patch('/block-user/:id', async (req, res) => {
+router.patch('/block-user/:id', authenticateUser, verifyAdmin, async (req, res) => {
     const userId = req.params.id;
     try {
         if (!userId) {
@@ -196,6 +201,37 @@ router.patch('/block-user/:id', async (req, res) => {
             { $set: { status: 'Blocked' } }
         );
         res.status(200).json({ success: true, message: 'user has been blocked' })
+    } catch (error) {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+
+})
+// all pending agents
+router.get('/all-pending-agents', async (req, res) => {
+    try {
+        const result = await User.find({
+            $and: [
+                { accountType: "Agent" },
+                { status: "Pending" }
+            ]
+        }).select({ __v: 0, PIN: 0 })
+        res.send(result)
+    } catch (error) {
+        res.send(error)
+    }
+})
+// approve a agent
+router.patch('/approve-agent/:id', authenticateUser, verifyAdmin, async (req, res) => {
+    const userId = req.params.id;
+    try {
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
+        }
+        await User.updateOne(
+            { _id: userId },
+            { $set: { status: 'Active' } }
+        );
+        res.status(200).json({ success: true, message: 'Agent activate' })
     } catch (error) {
         res.status(500).json({ message: 'Internal server error' });
     }

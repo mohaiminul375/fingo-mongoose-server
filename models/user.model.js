@@ -31,7 +31,6 @@ const userModel = new mongoose.Schema({
     accountType: {
         type: String,
         enum: ['User', 'Agent'],
-        default: 'active'
     },
     current_balance: {
         type: Number,
@@ -39,7 +38,7 @@ const userModel = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Active', 'Pending' ],
+        enum: ['Active', 'Pending'],
         default: 'Active'
     },
     total_income: {
@@ -49,13 +48,19 @@ const userModel = new mongoose.Schema({
         }
     }
 }, { timestamps: true })
+
 // Explain
+userModel.pre('validate', function (next) {
+    if (this.isNew && this.accountType === 'Agent') {
+        this.total_income = 0;
+    }
+    next();
+});
 userModel.pre('save', function (next) {
     if (this.isNew) {
         if (this.accountType === 'Agent') {
             this.status = 'Pending';
             this.current_balance = 100000;
-            this.total_income = 0;
         } else if (this.accountType === 'User') {
             this.status = 'Active';
             this.current_balance = 40;
