@@ -36,6 +36,12 @@ const transactionModel = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    agent_charge: {
+        type: Number,
+    },
+    user_charge: {
+        type: Number,
+    },
     linked_Trx_ref_1: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'UserTransaction'

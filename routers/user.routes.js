@@ -15,7 +15,7 @@ import mongoose from "mongoose"
 
 
 // Get all user for admin
-router.get('/all-users', authenticateUser, verifyAdmin, async (req, res) => {
+router.get('/all-users',  async (req, res) => {
     const result = await User.find().select({
         __v: 0,
         PIN: 0,
@@ -101,7 +101,7 @@ router.post('/register', async (req, res) => {
         const newMasterTrx = new MasterTransaction({
             _id: masterTrxObjectId,
             Master_TrxID: master_trx_id,
-            method: 'New_user_bonus_send',
+            method: 'New_user_bonus',
             sender_name: 'Fingo-mfs',
             sender_phone_number: 'Fingo-mfs@support',
             receiver_name: name,
@@ -110,7 +110,7 @@ router.post('/register', async (req, res) => {
             linked_Trx_ref_1: trxObjectId1,
             linked_Trx_ref_2: trxObjectId2,
             admin_income: 0,
-            agent_income: 0,
+            ...(isAgent && { agent_income: 0 })
         });
 
         await UserTransaction.insertMany(newTrx, { session });
