@@ -15,7 +15,7 @@ import mongoose from "mongoose"
 
 
 // Get all user for admin
-router.get('/all-users',  async (req, res) => {
+router.get('/all-users', authenticateUser, verifyAdmin, async (req, res) => {
     const result = await User.find().select({
         __v: 0,
         PIN: 0,

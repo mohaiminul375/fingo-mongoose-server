@@ -96,7 +96,7 @@ router.post('/complete-cashIn', async (req, res) => {
                 receiver_phone_number,
                 amount: parsedAmount,
                 charge: 0,
-                agent_income: 0,
+                agent_income: parsedAmount * 0.01,
                 linked_Trx_ref: trxObjectId2,
                 masterTrx_ref: masterTrxObjectId,
             },
@@ -126,17 +126,17 @@ router.post('/complete-cashIn', async (req, res) => {
             receiver_phone_number,
             amount: parsedAmount,
             agent_income: agentIncomeCalculation,
-            admin_income: 0,
+            admin_income: parsedAmount * 0.01,
             agent_charge: 0,
             user_charge: 0,
             linked_Trx_ref_1: trxObjectId1,
             linked_Trx_ref_2: trxObjectId2,
         })
-       
+
         // Save transaction
-      
-            await UserTransaction.insertMany(newTrx, { session })
-            await masterTrx.save({ session });
+
+        await UserTransaction.insertMany(newTrx, { session })
+        await masterTrx.save({ session });
         // Update Balance
         await User.updateOne(
             { phone_number: sender_phone_number },
