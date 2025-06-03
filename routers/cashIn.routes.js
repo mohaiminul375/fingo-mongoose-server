@@ -20,24 +20,24 @@ router.post('/verify-cashIn', async (req, res) => {
         console.log(req.body)
         // Ensure the method is cashIn
         if (method !== 'cashIn') {
-            return res.status(400).json({ error: 'Invalid method' });
+            return res.status(400).json({ message: 'Invalid method' });
         }
         const verifyAgent = await User.findOne({ phone_number: sender_phone_number });
         if (!verifyAgent) {
-            return res.status(404).json({ error: 'Agent not found' });
+            return res.status(404).json({ message: 'Agent not found' });
         }
         //verify pin
         const isMatch = await bcrypt.compare(PIN, verifyAgent.PIN);
         if (!isMatch) {
-            return res.status(400).json({ error: 'Invalid credentials' });
+            return res.status(400).json({ message: 'Invalid credentials' });
         }
         // Verify receiver's phone number
         const verifyReceiver = await User.findOne({ phone_number: receiver_phone_number });
         if (!verifyReceiver) {
-            return res.status(404).json({ error: 'Receiver not found' });
+            return res.status(404).json({ message: 'Receiver not found' });
         }
         if (verifyReceiver.accountType !== 'User') {
-            return res.status(404).json({ error: 'Receiver must a customer' });
+            return res.status(404).json({ message: 'Receiver must a customer' });
         }
         let receiver_name = verifyReceiver.name;
         const verifiedTransaction = {
@@ -51,7 +51,7 @@ router.post('/verify-cashIn', async (req, res) => {
         res.status(200).json({ verifiedTransaction })
     } catch (error) {
         console.error('Error in verify-cashIn:', error);
-        return res.status(500).json({ error: 'An error occurred while processing the transaction' });
+        return res.status(500).json({ message: 'An error occurred while processing the transaction' });
     }
 })
 router.post('/complete-cashIn', async (req, res) => {
@@ -63,17 +63,17 @@ router.post('/complete-cashIn', async (req, res) => {
         // Get Agent
         const verifyAgent = await User.findOne({ phone_number: sender_phone_number });
         if (!verifyAgent) {
-            return res.status(404).json({ error: 'Agent not found' });
+            return res.status(404).json({ message: 'Agent not found' });
         }
         // Check if Agent has enough balance
         const parsedAmount = parseFloat(amount);
         if (verifyAgent.current_balance < parsedAmount) {
-            return res.status(400).json({ error: 'Insufficient balance for agent' });
+            return res.status(400).json({ message: 'Insufficient balance for agent' });
         }
         // Get Receiver
         const verifyReceiver = await User.findOne({ phone_number: receiver_phone_number });
         if (!verifyReceiver) {
-            return res.status(404).json({ error: 'Receiver not found' });
+            return res.status(404).json({ message: 'Receiver not found' });
         }
         // console.log(verifyReceiver, verifyAgent)
         // Calculate balances
@@ -162,7 +162,7 @@ router.post('/complete-cashIn', async (req, res) => {
     } catch (error) {
         await session.abortTransaction(); // rollback
         session.endSession();
-        return res.status(500).json({ error: 'An error occurred while processing cashIn' });
+        return res.status(500).json({ message: 'An error occurred while processing cashIn' });
     }
 
 
