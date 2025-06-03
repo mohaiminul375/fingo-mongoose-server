@@ -125,8 +125,8 @@ router.post('/complete-cashIn', async (req, res) => {
             receiver_name,
             receiver_phone_number,
             amount: parsedAmount,
-            agent_income: agentIncomeCalculation,
-            admin_income: parsedAmount * 0.01,
+            agent_income: parsedAmount * 0.01,
+            admin_income: 0,
             agent_charge: 0,
             user_charge: 0,
             linked_Trx_ref_1: trxObjectId1,
@@ -160,7 +160,7 @@ router.post('/complete-cashIn', async (req, res) => {
         session.endSession();
         res.status(200).json({ success: true, message: 'cashIn successfully' });
     } catch (error) {
-        await session.abortTransaction(); // rollback
+        await session.abortTransaction(); 
         session.endSession();
         return res.status(500).json({ message: 'An error occurred while processing cashIn' });
     }
