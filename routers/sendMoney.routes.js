@@ -57,12 +57,12 @@ router.post('/verify-sendMoney', async (req, res) => {
         };
         res.status(200).json({ verifiedTransaction })
     } catch (error) {
-        console.error('Error in verify-cashIn:', error);
+        console.error('Error in verify-sendMoney:', error);
         return res.status(500).json({ message: 'An error occurred while processing the transaction' });
     }
 })
 router.post('/complete-sendMoney', async (req, res) => {
-    const session = await mongoose.startSession(); // start session
+    const session = await mongoose.startSession();
     session.startTransaction();
     try {
         const { sender_name, sender_phone_number, receiver_name, receiver_phone_number, amount, charge } = req.body;
