@@ -7,8 +7,21 @@ router.get('/agent-transactions/:phone_number', async (req, res) => {
     try {
         const phone_number = req.params.phone_number;
         const query = {
-            method: "Agent_cashIn",
-            sender_phone_number: phone_number
+            $or: [
+                {
+                    method: "New_user_bonus_receive",
+                    receiver_phone_number: phone_number
+                },
+                {
+                    method: "Agent_cashIn",
+                    sender_phone_number: phone_number
+                },
+                {
+                    method: "Agent_cashOut",
+                    receiver_phone_number: phone_number
+                },
+            ]
+
         };
         const result = await UserTransaction.find(query).select({ "__v": 0 }).sort({ createdAt: -1 });
         res.status(200).send(result)
@@ -20,8 +33,28 @@ router.get('/user-transactions/:phone_number', async (req, res) => {
     try {
         const phone_number = req.params.phone_number;
         const query = {
-            method: "User_cashIn",
-            receiver_phone_number: phone_number
+            $or: [
+                {
+                    method: "New_user_bonus_receive",
+                    receiver_phone_number: phone_number
+                },
+                {
+                    method: "User_cashIn",
+                    receiver_phone_number: phone_number
+                },
+                {
+                    method: "sendMoney",
+                    sender_phone_number: phone_number
+                },
+                {
+                    method: "receivedMoney",
+                    receiver_phone_number: phone_number
+                },
+                {
+                    method: "User_cashOut",
+                    sender_phone_number: phone_number
+                },
+            ]
         };
         const result = await UserTransaction.find(query).select({ "__v": 0 }).sort({ createdAt: -1 });
         res.status(200).send(result)

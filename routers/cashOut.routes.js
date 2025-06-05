@@ -21,11 +21,11 @@ router.post('/verify-cashOut', async (req, res) => {
         if (sender_phone_number === receiver_phone_number) {
             return res.status(400).json({ message: 'Invalid method' });
         }
-     
+
         if (method !== 'cashOut') {
             return res.status(400).json({ message: 'Invalid method' });
         }
-  
+
         // Verify Sender's phone number and PIN
         const verifySender = await User.findOne({ phone_number: sender_phone_number });
         if (!verifySender) {
@@ -70,7 +70,7 @@ router.post('/complete-cashOut', async (req, res) => {
     const session = await mongoose.startSession(); // start session
     session.startTransaction();
     try {
-        const { method, sender_name, sender_phone_number, receiver_name, receiver_phone_number, amount, charge } = req.body;
+        const { sender_name, sender_phone_number, receiver_name, receiver_phone_number, amount, charge } = req.body;
         // Get Agent
         const verifyUser = await User.findOne({ phone_number: sender_phone_number });
         if (!verifyUser) {
