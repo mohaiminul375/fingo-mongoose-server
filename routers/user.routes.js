@@ -15,7 +15,7 @@ import mongoose from "mongoose"
 
 
 // Get all user for admin
-router.get('/all-users',  async (req, res) => {
+router.get('/all-users', async (req, res) => {
     const result = await User.find().select({
         __v: 0,
         PIN: 0,
@@ -81,7 +81,7 @@ router.post('/register', async (req, res) => {
                 linked_Trx_ref: trxObjectId2,
                 masterTrx_ref: masterTrxObjectId,
                 admin_income: 0,
-                agent_income: 0,
+                charge: 0,
             },
             {
                 _id: trxObjectId2,
@@ -94,6 +94,7 @@ router.post('/register', async (req, res) => {
                 amount: bonusAmount,
                 linked_Trx_ref: trxObjectId1,
                 masterTrx_ref: masterTrxObjectId,
+                charge: 0,
                 ...(isAgent && { agent_income: 0 })
             }
         ];
@@ -110,6 +111,8 @@ router.post('/register', async (req, res) => {
             linked_Trx_ref_1: trxObjectId1,
             linked_Trx_ref_2: trxObjectId2,
             admin_income: 0,
+            agent_charge: 0,
+            user_charge: 0,
             ...(isAgent && { agent_income: 0 })
         });
 

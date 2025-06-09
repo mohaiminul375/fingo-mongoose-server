@@ -2,6 +2,10 @@ import { Router } from "express";
 import { UserTransaction } from "../models/transaction.model.js";
 
 const router = Router();
+router.get('/all-trx', async (req, res) => {
+    const result = await UserTransaction.find().sort({ createdAt: -1 });
+    res.send(result)
+})
 // TODO: agent middleware
 router.get('/agent-transactions/:phone_number', async (req, res) => {
     try {

@@ -67,7 +67,7 @@ router.post('/verify-cashOut', async (req, res) => {
     }
 })
 router.post('/complete-cashOut', async (req, res) => {
-    const session = await mongoose.startSession(); // start session
+    const session = await mongoose.startSession(); 
     session.startTransaction();
     try {
         const { sender_name, sender_phone_number, receiver_name, receiver_phone_number, amount, charge } = req.body;
