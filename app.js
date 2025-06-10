@@ -11,6 +11,7 @@ import transactionHistoryRouter from "./routers/transactionHistory.routes.js"
 import sendMoneyRouter from "./routers/sendMoney.routes.js"
 import cashOutRouter from "./routers/cashOut.routes.js"
 import agentRequestMoney from "./routers/agentCashReq.routes.js"
+import agentWithdrawIncome from "./routers/agentIncomeWithdraw.routes.js"
 //routers
 app.use("/users", userRouter)
 app.use("/cashIn", cashInRouter)
@@ -18,4 +19,5 @@ app.use("/transaction-history", transactionHistoryRouter)
 app.use("/send-money", sendMoneyRouter)
 app.use("/cashOut", cashOutRouter)
 app.use("/request-money-agent", agentRequestMoney)
+app.use("/request-withdraw-agent", agentWithdrawIncome)
 export { app }
