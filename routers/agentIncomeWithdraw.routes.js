@@ -7,7 +7,7 @@ import { MasterTransaction } from "../models/MasterTransaction.js";
 import { UserTransaction } from "../models/transaction.model.js";
 const router = Router();
 router.get('/all-request', async (req, res) => {
-    const result = await IncomeWithdraw.find();
+    const result = await IncomeWithdraw.find({ status: 'Pending' });
     res.send(result)
 })
 
