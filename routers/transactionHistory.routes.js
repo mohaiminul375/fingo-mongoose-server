@@ -1,7 +1,19 @@
 import { Router } from "express";
 import { UserTransaction } from "../models/transaction.model.js";
+import { MasterTransaction } from "../models/MasterTransaction.js";
 
 const router = Router();
+router.get('/master-trx-admin', async (req, res) => {
+    try {
+        const result = await MasterTransaction.find()
+            .populate('linked_Trx_ref_1')
+            .populate('linked_Trx_ref_2');
+        res.status(200).send(result)
+    } catch (error) {
+
+    }
+
+})
 router.get('/all-trx', async (req, res) => {
     const result = await UserTransaction.find().sort({ createdAt: -1 });
     res.send(result)
@@ -30,7 +42,7 @@ router.get('/agent-transactions/:phone_number', async (req, res) => {
         const result = await UserTransaction.find(query).select({ "__v": 0 }).sort({ createdAt: -1 });
         res.status(200).send(result)
     } catch (error) {
-
+        //Todo:
     }
 })
 router.get('/user-transactions/:phone_number', async (req, res) => {
@@ -63,7 +75,7 @@ router.get('/user-transactions/:phone_number', async (req, res) => {
         const result = await UserTransaction.find(query).select({ "__v": 0 }).sort({ createdAt: -1 });
         res.status(200).send(result)
     } catch (error) {
-
+        // Todo:
     }
 })
 export default router;
